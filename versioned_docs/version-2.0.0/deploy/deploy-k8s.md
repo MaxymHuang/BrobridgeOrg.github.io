@@ -9,7 +9,7 @@ This document describes how to set up a demo case of Gravity on k8s. We will dep
 * MSSQL: ```mcr.microsoft.com/mssql/server:2019-latest```
 * Adapter: ```hb.k8sbridge.com/gravity/gravity-adapter-mssql:v3.0.2```
 * Dispatcher: ```brobridgehub/gravity-dispatcher:v0.0.2```
-* Atmoic: ```brobridgehub/atomic-labdemo:v0.0.5-20230413-01```
+* Atomic: ```brobridgehub/atomic-labdemo:v0.0.5-20230413-01```
 * JetSteam: ```nats:2.9.15``` 
 
 ## Get assets
@@ -176,6 +176,18 @@ persistentvolumeclaim/mssql-adapter-data-claim created
 kubectl get pod
 NAME                      READY   STATUS    RESTARTS   AGE
 gravity-adapter-mssql-0   1/1     Running   0          15s
+```
+
+``` shell
+kubectl logs sts/gravity-adapter-mssql
+Defaulted container "gravity-adapter-mssql" out of: gravity-adapter-mssql, clone-assets (init)
+Debug level is set to "debug"
+time="2023-06-26T05:18:59Z" level=info msg="Starting application" max_procs=8
+time="2023-06-26T05:18:59Z" level=info msg="Connecting to gravity..." address="nats-jetstream.default.svc.cluster.local:32803" maxPingsOutstanding=3 maxReconnects=-1 pingInterval=10s
+time="2023-06-26T05:18:59Z" level=info msg="Initializing store" path=/statestore
+time="2023-06-26T05:18:59Z" level=info msg="Initializing source" host=source-mssql.default.svc.cluster.local name=mssql_example port=1433
+time="2023-06-26T05:18:59Z" level=info msg="Initializing store for adapter" store=adapter-mssql_example
+time="2023-06-26T05:18:59Z" level=info msg="Connecting to database" dbname=TestDB host=source-mssql.default.svc.cluster.local param= port=1433 username=SA
 ```
 
 ## Deploy Atomic
