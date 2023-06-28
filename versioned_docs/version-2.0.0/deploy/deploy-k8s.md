@@ -7,8 +7,8 @@ This document describes how to set up a demo case of Gravity on k8s. We will dep
 ## Components Version
 * MySQL: ```mysql:8.0.33```
 * MSSQL: ```mcr.microsoft.com/mssql/server:2019-latest```
-* Adapter: ```hb.k8sbridge.com/gravity/gravity-adapter-mssql:v3.0.2```
-* Dispatcher: ```brobridgehub/gravity-dispatcher:v0.0.2```
+* Adapter: ```brobridgehub/gravity-adapter-mssql```
+* Dispatcher (Include gravity-cli): ```brobridgehub/gravity-dispatcher:v0.0.4```
 * Atomic: ```brobridgehub/atomic-labdemo:v0.0.5-20230413-01```
 * JetSteam: ```nats:2.9.15``` 
 
@@ -22,26 +22,34 @@ cd gravity-k8s
 Next, we will deploy the Source and Target databases. For the purpose of demonstration, we will use StatefulSet to deploy the databases. Please note that deploying databases in a production environment requires consideration of various additional factors. This document does not cover the details of deploying databases in a production environment.
 
 ### Source
+In the Source Database, we will deploy some sample schemas and enable the Change Data Capture (CDC) feature. An Init Container will fetch assets from a git repository to deploy these schemas.
+
 ``` shell
 kubectl apply -f k8s/source.yaml
 
-persistentvolumeclaim/mssql-data-claim created
 service/source-mssql created
 statefulset.apps/source-mssql created
+```
+
+Demo schema
+```sql
+CREATE TABLE Accounts (
+    id INT, 
+    name NVARCHAR(50), 
+    phone NVARCHAR(16)
+);
 ```
 
 ### Verify Source Database
 ``` shell
 kubectl logs pod/source-mssql-0
- 
-Defaulted container "source-mssql" out of: source-mssql, clone-assets (init)
+
+Defaulted container "source-mssql" out of: source-mssql, clear-assets (init), clone-assets (init)
 Waiting for MSSQL to be available ⏳
 /opt/mssql/bin/sqlservr: Invalid mapping of address 0x40047f3000 in reserved address space below 0x400000000000. Possible causes:
 1) the process (itself, or via a wrapper) starts-up its own running environment sets the stack size limit to unlimited via syscall setrlimit(2);
 2) the process (itself, or via a wrapper) adjusts its own execution domain and flag the system its legacy personality via syscall personality(2);
 3) sysadmin deliberately sets the system to run on legacy VA layout mode by adjusting a sysctl knob vm.legacy_va_layout.
-
-Mon Jun 26 03:29:34 UTC 2023
 ```
 
 ``` shell
@@ -55,7 +63,6 @@ source-mssql-0   1/1     Running   0          14s
 kubectl apply -f k8s/target.yaml
 
 service/target-mysql created
-persistentvolumeclaim/mysql-data-claim created
 statefulset.apps/target-mysql created
 ```
 ### Verify Target Database
@@ -125,6 +132,8 @@ kubectl logs pod/nats-jetstream-0
 ```
 
 ## Deploy Dispatcher
+The Dispatcher needs to be configured to handle its own event formats. We utilize the gravity-cli for this configuration. If operations are required, you can connect to perform these operations.
+
 ``` shell
 kubectl apply -f k8s/dispatcher.yaml
 
@@ -136,30 +145,84 @@ statefulset.apps/gravity-dispatcher created
 ``` shell
 kubectl logs pod/gravity-dispatcher-0
 
-Defaulted container "gravity-dispatcher" out of: gravity-dispatcher, clone-assets (init)
+Defaulted container "gravity-dispatcher" out of: gravity-dispatcher, clear-assets (init), clone-assets (init)
 Start gravity-dispatcher
 No configuration file was loaded
-2023-06-26 04:25:28	INFO	Debug level is set to "debug"
+2023-06-27 10:04:04	INFO	Debug level is set to "debug"
 
-2023-06-26 04:25:28	INFO	Connector	Connecting to Gravity Network...	{"domain": "default", "address": "nats-jetstream.default.svc.cluster.local:32803", "pingInterval": 10, "maxPingsOutstanding": 3, "maxReconnects": -1}
-2023-06-26 04:25:28	INFO	System	Loading system configuration...
-2023-06-26 04:25:28	INFO	System	Initializing Token RPC	{"prefix": "$GVT.default.API.CORE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.CORE.AUTHENTICATE"}
-2023-06-26 04:25:28	INFO	System	Initializing Product RPC	{"prefix": "$GVT.default.API.PRODUCT"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.LIST"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.CREATE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.UPDATE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.DELETE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.INFO"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.PURGE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.PREPARE_SUBSCRIPTION"}
-2023-06-26 04:25:28	INFO	System	Initializing Token RPC	{"prefix": "$GVT.default.API.TOKEN"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.LIST_AVAILABLE_PERMISSIONS"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.LIST"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.CREATE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.UPDATE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.DELETE"}
-2023-06-26 04:25:28	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.INFO"}
+2023-06-27 10:04:04	INFO	Connector	Connecting to Gravity Network...	{"domain": "default", "address": "nats-jetstream.default.svc.cluster.local:32803", "pingInterval": 10, "maxPingsOutstanding": 3, "maxReconnects": -1}
+2023-06-27 10:04:04	INFO	System	Loading system configuration...
+2023-06-27 10:04:04	INFO	System	Initializing secret configurations...
+2023-06-27 10:04:04	INFO	System	Initializing auth configurations...
+2023-06-27 10:04:04	INFO	System	Initializing Token RPC	{"prefix": "$GVT.default.API.CORE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.CORE.AUTHENTICATE"}
+2023-06-27 10:04:04	INFO	System	Initializing Product RPC	{"prefix": "$GVT.default.API.PRODUCT"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.LIST"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.CREATE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.UPDATE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.DELETE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.INFO"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.PURGE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.PRODUCT.PREPARE_SUBSCRIPTION"}
+2023-06-27 10:04:04	INFO	System	Initializing Token RPC	{"prefix": "$GVT.default.API.TOKEN"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.LIST_AVAILABLE_PERMISSIONS"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.LIST"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.CREATE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.UPDATE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.DELETE"}
+2023-06-27 10:04:04	INFO	System	Registered API	{"path": "$GVT.default.API.TOKEN.INFO"}
+2023-06-27 10:04:04	INFO	Dispatcher	Initializing publisher with individual connection...
+2023-06-27 10:04:04	INFO	Connector	Connecting to Gravity Network...	{"domain": "default", "address": "nats-jetstream.default.svc.cluster.local:32803", "pingInterval": 10, "maxPingsOutstanding": 3, "maxReconnects": -1}
+2023-06-27 10:04:04	INFO	Dispatcher	Initializing config store...
+2023-06-27 10:04:06	INFO	System	-> $GVT.default.API.PRODUCT.CREATE
+2023-06-27 10:04:06	INFO	Dispatcher	Syncing data product settings	{"name": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Applying product settings	{"name": "accounts", "enabled": true, "ruleCount": 0}
+2023-06-27 10:04:06	INFO	Dispatcher	Create product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Checking product stream	{"product": "accounts", "stream": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	WARN	Dispatcher	Product stream is not ready	{"product": "accounts", "stream": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Creating a new product stream...	{"product": "accounts", "stream": "GVT_default_DP_accounts", "subject": "$GVT.default.DP.accounts.*.EVENT.>"}
+Product "accounts" was created
+sh: 28?: bad number
+## Product has been created.
+2023-06-27 10:04:06	INFO	Dispatcher	Initializing event stream	{"stream": "GVT_default"}
+2023-06-27 10:04:06	WARN	Dispatcher	event stream not found	{"stream": "GVT_default"}
+2023-06-27 10:04:06	INFO	Dispatcher	Creating stream...	{"stream": "GVT_default", "subject": "$GVT.default.EVENT.*"}
+2023-06-27 10:04:06	INFO	Dispatcher	Deactivating product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Activating product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Start watching for events...
+2023-06-27 10:04:06	INFO	Dispatcher	Checking consumer	{"stream": "GVT_default", "consumer": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Creating a new consumer...	{"stream": "GVT_default", "subject": "$GVT.default.EVENT.>"}
+2023-06-27 10:04:06	INFO	Dispatcher	Waiting events...	{"subject": "$GVT.default.EVENT.>", "dueable": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	System	-> $GVT.default.API.PRODUCT.INFO
+2023-06-27 10:04:06	INFO	System	-> $GVT.default.API.PRODUCT.UPDATE
+2023-06-27 10:04:06	INFO	Dispatcher	Syncing data product settings	{"name": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Applying product settings	{"name": "accounts", "enabled": true, "ruleCount": 1}
+2023-06-27 10:04:06	INFO	Dispatcher	Update product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Deactivating product	{"product": "accounts"}
+## Product ruleset 'accountCreated' has been created.
+sh: 28?: bad number
+2023-06-27 10:04:06	INFO	Dispatcher	Registered event	{"subject": "$GVT.default.EVENT.accountCreated"}
+2023-06-27 10:04:06	INFO	Dispatcher	Activating product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Start watching for events...
+2023-06-27 10:04:06	INFO	Dispatcher	Checking consumer	{"stream": "GVT_default", "consumer": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Consumer exists already	{"stream": "GVT_default", "consumer": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Waiting events...	{"subject": "$GVT.default.EVENT.>", "dueable": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	System	-> $GVT.default.API.PRODUCT.INFO
+2023-06-27 10:04:06	INFO	System	-> $GVT.default.API.PRODUCT.UPDATE
+2023-06-27 10:04:06	INFO	Dispatcher	Syncing data product settings	{"name": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Applying product settings	{"name": "accounts", "enabled": true, "ruleCount": 2}
+2023-06-27 10:04:06	INFO	Dispatcher	Update product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Deactivating product	{"product": "accounts"}
+## Product ruleset 'accountDeleted' has been created.
+sh: 28?: bad number
+## Product has been created. Waiting for gravity-dispatcher(pid 14) to terminate.
+2023-06-27 10:04:06	INFO	Dispatcher	Registered event	{"subject": "$GVT.default.EVENT.accountCreated"}
+2023-06-27 10:04:06	INFO	Dispatcher	Registered event	{"subject": "$GVT.default.EVENT.accountDeleted"}
+2023-06-27 10:04:06	INFO	Dispatcher	Activating product	{"product": "accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Start watching for events...
+2023-06-27 10:04:06	INFO	Dispatcher	Checking consumer	{"stream": "GVT_default", "consumer": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Consumer exists already	{"stream": "GVT_default", "consumer": "GVT_default_DP_accounts"}
+2023-06-27 10:04:06	INFO	Dispatcher	Waiting events...	{"subject": "$GVT.default.EVENT.>", "dueable": "GVT_default_DP_accounts"}
 ```
 
 
@@ -180,14 +243,21 @@ gravity-adapter-mssql-0   1/1     Running   0          15s
 
 ``` shell
 kubectl logs sts/gravity-adapter-mssql
-Defaulted container "gravity-adapter-mssql" out of: gravity-adapter-mssql, clone-assets (init)
+
+Defaulted container "gravity-adapter-mssql" out of: gravity-adapter-mssql, clear-assets (init), clone-assets (init)
 Debug level is set to "debug"
-time="2023-06-26T05:18:59Z" level=info msg="Starting application" max_procs=8
-time="2023-06-26T05:18:59Z" level=info msg="Connecting to gravity..." address="nats-jetstream.default.svc.cluster.local:32803" maxPingsOutstanding=3 maxReconnects=-1 pingInterval=10s
-time="2023-06-26T05:18:59Z" level=info msg="Initializing store" path=/statestore
-time="2023-06-26T05:18:59Z" level=info msg="Initializing source" host=source-mssql.default.svc.cluster.local name=mssql_example port=1433
-time="2023-06-26T05:18:59Z" level=info msg="Initializing store for adapter" store=adapter-mssql_example
-time="2023-06-26T05:18:59Z" level=info msg="Connecting to database" dbname=TestDB host=source-mssql.default.svc.cluster.local param= port=1433 username=SA
+time="2023-06-28T02:28:40Z" level=info msg="Starting application" max_procs=8
+time="2023-06-28T02:28:40Z" level=info msg="Connecting to gravity..." address="nats-jetstream.default.svc.cluster.local:32803" maxPingsOutstanding=3 maxReconnects=-1 pingInterval=10s
+time="2023-06-28T02:28:40Z" level=info msg="Initializing store" path=/statestore
+time="2023-06-28T02:28:40Z" level=info msg="Initializing source" host=source-mssql.default.svc.cluster.local name=mssql_example port=1433
+time="2023-06-28T02:28:40Z" level=info msg="Initializing store for adapter" store=adapter-mssql_example
+time="2023-06-28T02:28:40Z" level=info msg="Connecting to database" dbname=TestDB host=source-mssql.default.svc.cluster.local param= port=1433 username=SA
+time="2023-06-28T02:28:55Z" level=error msg="unable to open tcp connection with host 'source-mssql.default.svc.cluster.local:1433': dial tcp 10.100.132.253:1433: i/o timeout"
+time="2023-06-28T02:28:55Z" level=info msg="Preparing to watch tables" tables="[dbo.Accounts]"
+time="2023-06-28T02:28:55Z" level=info msg="Running ..."
+time="2023-06-28T02:28:55Z" level=info msg="Received LSN" LSN= Table=dbo.Accounts
+time="2023-06-28T02:28:55Z" level=info msg="Initializing workers ..." client_name=gravity_adapter_mssql-gravity-adapter-mssql-0-mssql_example source=mssql_example
+time="2023-06-28T02:28:55Z" level=info msg="Start watch event."
 ```
 
 ## Deploy Atomic
@@ -196,28 +266,36 @@ time="2023-06-26T05:18:59Z" level=info msg="Connecting to database" dbname=TestD
 kubectl apply -f k8s/atomic.yaml
 
 service/atomic created
-persistentvolumeclaim/assets-claim created
-persistentvolumeclaim/e2e-status-claim created
 statefulset.apps/atomic created
 ```
+
 ### Verify Atomic
 ``` shell
 kubectl logs pod/atomic-0
 
+Defaulted container "atomic" out of: atomic, clear-assets (init), clone-assets (init)
+
+> node-red@1.3.5 start
+> node packages/node_modules/node-red/red.js --userDir /assets/assets/atomic-flow /assets/assets/atomic-flow/flows.json
+
+(node:22) [DEP0128] DeprecationWarning: Invalid 'main' field in '/atomic/packages/node_modules/@node-red/editor-client/package.json' of './lib/index.js'. Please either fix that or report it to the module author
+(Use `node --trace-deprecation ...` to show where the warning was created)
+28 Jun 02:39:33 - [info]
+
 Welcome to Node-RED
 ===================
 
-26 Jun 04:58:09 - [info] Node-RED version: v1.3.5
-26 Jun 04:58:09 - [info] Node.js  version: v16.18.0
-26 Jun 04:58:09 - [info] Linux 6.3.9-orbstack-00173-g5c15eb5460a9 x64 LE
-26 Jun 04:58:12 - [info] Loading palette nodes
-26 Jun 04:58:15 - [info] Settings file  : /assets/assets/atomic-flow/settings.js
-26 Jun 04:58:15 - [info] Context store  : 'default' [module=memory]
-26 Jun 04:58:15 - [info] User directory : /assets/assets/atomic-flow
-26 Jun 04:58:15 - [warn] Projects disabled : editorTheme.projects.enabled=false
-26 Jun 04:58:15 - [info] Flows file     : /assets/assets/atomic-flow/flows.json
-26 Jun 04:58:15 - [info] Creating new flow file
-26 Jun 04:58:15 - [warn]
+28 Jun 02:39:33 - [info] Node-RED version: v1.3.5
+28 Jun 02:39:33 - [info] Node.js  version: v16.18.0
+28 Jun 02:39:33 - [info] Linux 6.3.9-orbstack-00173-g5c15eb5460a9 x64 LE
+28 Jun 02:39:35 - [info] Loading palette nodes
+28 Jun 02:39:37 - [info] Settings file  : /assets/assets/atomic-flow/settings.js
+28 Jun 02:39:37 - [info] Context store  : 'default' [module=memory]
+28 Jun 02:39:37 - [info] User directory : /assets/assets/atomic-flow
+28 Jun 02:39:37 - [warn] Projects disabled : editorTheme.projects.enabled=false
+28 Jun 02:39:37 - [info] Flows file     : /assets/assets/atomic-flow/flows.json
+28 Jun 02:39:37 - [info] Creating new flow file
+28 Jun 02:39:37 - [warn]
 
 ---------------------------------------------------------------------
 Your flow credentials file is encrypted using a system-generated key.
@@ -231,9 +309,9 @@ your settings file. Node-RED will then re-encrypt your credentials
 file using your chosen key the next time you deploy a change.
 ---------------------------------------------------------------------
 
-26 Jun 04:58:15 - [info] Server now running at http://127.0.0.1:1880/
-26 Jun 04:58:15 - [info] Starting flows
-26 Jun 04:58:15 - [info] Started flows
+28 Jun 02:39:37 - [info] Server now running at http://127.0.0.1:1880/
+28 Jun 02:39:37 - [info] Starting flows
+28 Jun 02:39:37 - [info] Started flows
 ```
 
 ## Result
@@ -241,10 +319,10 @@ file using your chosen key the next time you deploy a change.
 kubectl get sts
 
 NAME                    READY   AGE
-atomic                  1/1     80s
-gravity-adapter-mssql   1/1     66m
-gravity-dispatcher      1/1     33m
-nats-jetstream          1/1     83m
-source-mssql            1/1     90m
-target-mysql            1/1     93m
+atomic                  1/1     3m40s
+gravity-adapter-mssql   1/1     14m
+gravity-dispatcher      1/1     16h
+nats-jetstream          1/1     16h
+source-mssql            1/1     59m
+target-mysql            1/1     54m
 ```
