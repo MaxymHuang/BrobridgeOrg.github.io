@@ -4,17 +4,17 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Raw Data Product',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Event Driven Architecture',
+    Svg: require('@site/static/img/event.svg').default,
     description: (
       <>
-        Instant, secure access to raw data, transformed into ready-to-use products with our service
+        Unleash the power of events — scalable, flexible, and real-time solutions.
       </>
     ),
   },
   {
     title: 'Data Computing Flow',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/event1.svg').default,
     description: (
       <>
         Seamless data integration, visual logic design, and scalable computing with minimal coding.
@@ -23,10 +23,10 @@ const FeatureList = [
   },
   {
     title: 'Data Product',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/event2.svg').default,
     description: (
       <>
-        Access managed, authenticated data instantly with our service, complete with real-time caching.
+        Data as a product, DB as a service. Alleviating workload from traditional monolithic data architecture.
       </>
     ),
   },
