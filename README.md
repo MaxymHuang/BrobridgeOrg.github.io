@@ -7,6 +7,7 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 ```
 $ npm install docusaurus
 ```
+Installs dependency for docusaurus 3.0
 
 ### Local Development
 
