@@ -2,7 +2,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Gravity Document',
+  title: 'Brobridge Gravity',
   tagline: 'The Cloud Native Data Mesh Solution',
   favicon: 'img/favicon.ico',
   url: 'https://your-docusaurus-site.example.com',
@@ -80,11 +80,19 @@ const config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Resources',
           items: [
             {
               label: 'Docs',
               to: '/docs/quickstart',
+            },
+            {
+              label: 'API',
+              to: '/docs/api/general',
+            },
+            {
+              label: 'FAQ',
+              to: '/docs/faq/general',
             },
           ],
         },
@@ -94,6 +102,10 @@ const config = {
             {
               label: 'GitHub',
               href: 'https://github.com/BrobridgeOrg',
+            },
+            {
+              label: 'Official Website',
+              href: 'https://brobridge.com',
             },
           ],
         },
