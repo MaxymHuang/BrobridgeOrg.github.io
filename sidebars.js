@@ -14,7 +14,7 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
-  docSidebar: [
+    docSidebar: [
     'quickstart', // Correct ID for 'Quick Start'
     'core-concepts', // Correct ID for 'Core Concepts'
     {
@@ -28,8 +28,61 @@ const sidebars = {
         'install_guide/atomic_guide',
       ],
     },
-  ],
+    ],
+    apiSidebar: [
+        {
+            type: 'category',
+            label: 'API documentation',
+            items: [
+                {
+                    type: 'doc',
+                    id: 'api/general',
+                    label: 'API guidelines'
+                },
+                {
+                    type: 'doc',
+                    id: 'api/gravity-sdk',
+                    label: 'Gravity SDK'
+                },
+                {
+                    type: 'doc',
+                    id: 'api/graviton',
+                    label: 'Graviton'
+                }
+            ]
+
+        }
+    ],
+    faqSidebar: [
+        {
+            type: 'category',
+            label: 'Frequently Asked Questions',
+            items: [
+                {
+                    type: 'doc',
+                    id: 'faq/general',
+                    label: 'General Questions'
+                },
+                {
+                    type: 'doc',
+                    id: 'faq/technical',
+                    label: 'Technical Questions'
+                },
+                {
+                    type: 'doc',
+                    id: 'faq/troubleshooting',
+                    label: 'Troubleshooting'
+                },
+                {
+                    type: 'doc',
+                    id: 'faq/gravity-portal',
+                    label: 'Gravity Portal'
+                }
+            ]
+        }
+    ]
   // You can create another sidebar manually if needed
+    //
   /*
   tutorialSidebar: [
     'intro',
