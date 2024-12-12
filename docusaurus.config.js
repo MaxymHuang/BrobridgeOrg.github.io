@@ -2,42 +2,42 @@ import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Gravity Document',
+  title: 'Brobridge Gravity',
   tagline: 'The Cloud Native Data Mesh Solution',
   favicon: 'img/favicon.ico',
-
   url: 'https://your-docusaurus-site.example.com',
   baseUrl: '/',
-
   organizationName: 'BBG',
   projectName: 'gravity-documentation',
-
-  // Update to ignore broken links instead of throwing an error
-  onBrokenLinks: 'warn',  // Changed from 'throw' to 'warn' for flexibility
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
-
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'zh-TW'],
+    localeConfigs: {
+      en: {
+        label: 'English'
+      },
+      'zh-TW': {
+        label: '繁體中文'
+      },
+    },
   },
-
   presets: [
     [
       'classic',
       {
         docs: {
           sidebarPath: './sidebars.js',
+          routeBasePath: '/docs',
         },
-        blog: {
-          showReadingTime: true,
-        },
+        blog: {},
         theme: {
           customCss: './src/css/custom.css',
         },
       },
     ],
   ],
-
   themeConfig: {
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
@@ -49,9 +49,25 @@ const config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'docSidebar',  // Ensure this is the correct sidebar ID
+          sidebarId: 'docSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'apiSidebar',
+          label: 'API',
+          position: 'left',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'faqSidebar',
+          label: 'FAQ',
+          position: 'left',
+        },
+        {
+          type: 'localeDropdown',
+          position: 'right',
         },
         {
           label: 'GitHub',
@@ -64,11 +80,19 @@ const config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Resources',
           items: [
             {
               label: 'Docs',
-              to: '/docs/quickstart',  // Correct link to valid path
+              to: '/docs/quickstart',
+            },
+            {
+              label: 'API',
+              to: '/docs/api/general',
+            },
+            {
+              label: 'FAQ',
+              to: '/docs/faq/general',
             },
           ],
         },
@@ -78,6 +102,10 @@ const config = {
             {
               label: 'GitHub',
               href: 'https://github.com/BrobridgeOrg',
+            },
+            {
+              label: 'Official Website',
+              href: 'https://brobridge.com',
             },
           ],
         },
@@ -92,4 +120,3 @@ const config = {
 };
 
 export default config;
-
