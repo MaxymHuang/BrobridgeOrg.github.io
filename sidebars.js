@@ -15,17 +15,18 @@
 const sidebars = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
     docSidebar: [
-    'quickstart', // Correct ID for 'Quick Start'
-    'core-concepts', // Correct ID for 'Core Concepts'
+    'en/why-gravity',
+    'en/core-concepts',
+    'en/quickstart',
     {
       type: 'category',
       label: 'Installation Guide',
       items: [
-        'install_guide/requirements',
-        'install_guide/env',
-        'install_guide/install_k8',
-        'install_guide/deployment',
-        'install_guide/atomic_guide',
+        'en/install_guide/requirements',
+        'en/install_guide/env',
+        'en/install_guide/install_k8',
+        'en/install_guide/deployment',
+        'en/install_guide/atomic_guide',
       ],
     },
     ],
@@ -36,17 +37,17 @@ const sidebars = {
             items: [
                 {
                     type: 'doc',
-                    id: 'api/general',
+                    id: 'en/api/general',
                     label: 'API guidelines'
                 },
                 {
                     type: 'doc',
-                    id: 'api/gravity-sdk',
+                    id: 'en/api/gravity-sdk',
                     label: 'Gravity SDK'
                 },
                 {
                     type: 'doc',
-                    id: 'api/graviton',
+                    id: 'en/api/graviton',
                     label: 'Graviton'
                 }
             ]
@@ -60,22 +61,22 @@ const sidebars = {
             items: [
                 {
                     type: 'doc',
-                    id: 'faq/general',
+                    id: 'en/faq/general',
                     label: 'General Questions'
                 },
                 {
                     type: 'doc',
-                    id: 'faq/technical',
+                    id: 'en/faq/technical',
                     label: 'Technical Questions'
                 },
                 {
                     type: 'doc',
-                    id: 'faq/troubleshooting',
+                    id: 'en/faq/troubleshooting',
                     label: 'Troubleshooting'
                 },
                 {
                     type: 'doc',
-                    id: 'faq/gravity-portal',
+                    id: 'en/faq/gravity-portal',
                     label: 'Gravity Portal'
                 }
             ]
