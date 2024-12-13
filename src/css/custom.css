@@ -9,8 +9,8 @@
   --ifm-color-primary-lightest: #aed6f1;
 
   /* Hover States */
-  --ifm-link-hover-color: #2980b9;
-  --ifm-menu-link-hover-background-color: rgba(52, 152, 219, 0.1);
+  --ifm-link-hover-color: #3498db;
+  --ifm-menu-link-hover-background-color: #a60001;
 
   /* Typography */
   --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;

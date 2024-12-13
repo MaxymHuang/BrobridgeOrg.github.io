@@ -78,16 +78,18 @@
   display: flex;
   justify-content: space-between;
   margin-top: 4rem;
-  gap: 2rem;
+  gap: 4rem;
 }
 
 .featureCard {
-  background: white;
+  flex: 1;
+  background: black;
   border-radius: 15px;
   padding: 2rem;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  margin: 0 1rem;
 }
 
 .featureCard:hover {
