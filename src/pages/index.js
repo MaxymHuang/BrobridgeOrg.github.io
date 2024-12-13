@@ -1,40 +1,50 @@
 import React from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
-
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/quickstart">
-            Quick Start
-          </Link>
-        </div>
+    <header className={styles.heroBanner}>
+      <div className={styles.heroContent}>
+        <h1 className={styles.heroTitle}>Gravity Documentation</h1>
+        <p className={styles.heroSubtitle}>
+      The Cloud Native Data Mesh Solution
+        </p>
+        <a href="/docs/why-gravity" className={styles.ctaButton}>
+          Get Started
+        </a>
       </div>
     </header>
   );
 }
 
-export default function Home() {
-  const {siteConfig} = useDocusaurusContext();
+function Features() {
   return (
-    <Layout
-      title={`${siteConfig.title} Docs`}
-      description="Description will go into a meta tag in <head />">
+    <div className="container">
+      <div className={styles.featureSection}>
+        <div className={styles.featureCard}>
+          <h3>Event Driven Architecture</h3>
+          <p>Unleash the power of events - Scalable, Flexible, and Real-time solutions</p>
+        </div>
+        <div className={styles.featureCard}>
+          <h3>Atomic</h3>
+          <p>Seamless data integration, visual logic design, and scalable computing with minimal coding</p>
+        </div>
+        <div className={styles.featureCard}>
+          <h3>Data Product</h3>
+          <p>Data as a product, DB as a service. Alleviating workload from traditional monolithic data architecture.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Layout>
       <HomepageHeader />
-      <main>
-        <HomepageFeatures />
+      <main className={styles.homePageMain}>
+        <Features />
       </main>
     </Layout>
   );

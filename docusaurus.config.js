@@ -39,8 +39,13 @@ const config = {
     ],
   ],
   themeConfig: {
+      colorMode: {
+          defaultMode: 'dark',
+          disableSwitch: true,
+      },
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
+      style: 'dark',
       title: 'Brobridge Gravity',
       logo: {
         alt: 'My Site Logo',
