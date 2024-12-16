@@ -31,28 +31,16 @@ const sidebars = {
     },
     ],
     apiSidebar: [
+        'api/general',
         {
-            type: 'category',
-            label: 'API documentation',
-            items: [
-                {
-                    type: 'doc',
-                    id: 'api/general',
-                    label: 'API guidelines'
-                },
-                {
-                    type: 'doc',
-                    id: 'api/gravity-sdk',
-                    label: 'Gravity SDK'
-                },
-                {
-                    type: 'doc',
-                    id: 'api/graviton',
-                    label: 'Graviton'
-                }
-            ]
+          type: 'category',
+          label: 'Gravity-SDK',
+          items: [
+            'api/sdk/overview',
+          ],
+        },
+        'api/graviton',
 
-        }
     ],
     faqSidebar: [
         'faq/general',
