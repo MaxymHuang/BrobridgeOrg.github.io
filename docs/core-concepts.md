@@ -1,52 +1,75 @@
----
-sidebar_position: 2
----
+# Core Concepts
 
-# Core Concepts 
+## *1.* Primary Components
 
-## 主要元件
+A **Gravity Cluster** consists of a few following primary components
 
-Gravity 產品基本由如下模組組成：
+### *1.1* Dispatcher
+Dispatcher acts as a overwatch agent that manages the **entire** Gravity Cluster. 
+It receives messages from data sources and *dispatches* messages into defined **data products** (See [data product](#dp)).
 
-- CDC Adapter:
+![dispatcher](/img/core/dispatcher.jpg)
 
-與來源資料庫對接，捕獲來源端的 CDC (Change Data Capture) 事件，具有斷點續傳能力。不同的資料庫會有不同的 Adapter，並且來源資料庫必須具備 (或模擬) 及開啟 CDC 功能。
+Dispatcher can also be easily configured and managed through [Gravity-CLI](./cli.md)
 
-- NATS Cluster:
+### *1.2* Adapter
 
-一個輕量化的 MQ (Message Queue) 叢集為 Gravity 提供資料快取 (Data Cache)，NATS JetStream 模組具有 real time streaming 能力。Gravity 的內部 data 與 event 都是存放於 NATS 裡面。
+Adapters are the official connectors for Gravity, it utilizes CDC (Change Data Capture) to read messages from message queues and databases.
 
-- Dispatcher:
+Below is a list of data sources that are officially supported by Gravity:
 
-提供 Gravity-CLI 介面管理 Gravity 相關的設定，例如 Data Product 相關的 Schema、Rule Set 及 Access Token 等等。Dispatcher 的命令結果及狀態也是儲存在 NATS cluster 裡面。
 
-**Atomic:**
 
-以 Low-Code 介面提供資料邏輯處理，作為 Data Product 之間的邏輯處理管線。Atomic 同時也負責目標資料庫的落地工作。
+| Sources             | Support          |
+|-------------------- | ---------------- |
+| MSSQL               |  Enterprise      |
+| Informix            |  Enterprise      |
+| Oracle v11g         |  Enterprise      |
+| MySQL               |  Open Source     |
+| Kafka               |  Enterprise      |
+| Oracle golden gate  |  Enterprise      |
+| MongoDB             |  Enterprise      |
+| PostgreSQL          |  Open Source     |
 
-** Gitea: **
 
-版控軟件，任何時候，我們都可以把 Atomic 的最新 flow 設計及啟動後安裝的 modules 推送到 Gitea 保存，並且每次 Atomic 啟動時會自動從 Gitea 拉取最新的版本下來運行。
-## Data Product
+### *1.3* NATs Cluster
+Gravity uses [NATs JetStream](https://docs.nats.io/nats-concepts/jetstream) as its primary message queuing system.
 
-### Data Domain
+Any messages entering Gravity will be stored in the NATs Cluster. Dispatcher will then manage these raw messages and organize them into data products before streaming messages to the target.
 
-資料自治領域 (通常代表某一資料系統)，各自有其資料擁有者 (Data Owner)。一個 DD (Data Domain ) 裡面存放有一個或多個資料產品 (DP, Data Product)。在建立資料產品時若不指定領域，則預設 domain 名稱會設定為 default。
+### *1.4* Atomic {#atom}
+Atomic is an alternative ETL (Extract Transform Load) solution that is highly scalable and user friendly. It features drag-and-drop UI, allowing users to easily achieve their business needs.
 
-### Data Product (DP)
 
-DP 是 Gravity 的基本資料集 (Data Set) 處理單元，所有資料必須在 Gravity 中形成資料產品才能被其他消費者訂閱加工，被加工後的資料也可成為新的 DP 供其他訂閱者使用。
-![image](/img/dp1.png)
-## 資料處理流程
+## *2.* Data Mesh
 
-Gravity 可讓我們非常彈性地構建多樣性的資料管線，以 Data Product 的方式將資料即時供應到不同的資料消費端。 類似生產線的概念，經過不同的管線處理形成一條又一條的資料產品鏈 (Product Chain)，最終組成一個分散式 Data Mesh 資料網格平台。
+A data mesh is a decentralized approach to managing and utilizing data in large organizations. 
+It shifts from a centralized data lake or warehouse model to one where domain teams own and manage their data as "data products." 
+This architecture treats data as a first-class product and applies product thinking to ensure data quality, discoverability, and usability. 
+Key principles of data mesh include domain-oriented ownership, self-serve data infrastructure, federated governance, and treating data as a product. 
+This enables scalability, autonomy for teams, and faster decision-making while addressing the challenges of data silos and bottlenecks in traditional centralized models.
 
-![image](/img/dp2.png)
+### *2.1* Data Domain
+A **data domain** refers to a specific, logically grouped area of data within an organization, typically aligned with business functions or processes such as sales, marketing, or finance. 
+In the context of modern data architectures, like data mesh, a data domain is managed by domain experts who take ownership of the data and treat it as a product. 
+This approach ensures that the data is accurate, reliable, and relevant for its intended users. 
+Data domains help break down silos and decentralize data management, fostering greater autonomy and faster insights within an organization.
 
-## Atomic 資料處理流程
+To put it in context, a **Gravity Cluster** itself can be a data domain as it is scalable and customizable. Nevertheless, Gravity can also be accessed across different data domains at user's will,
+which is convenient when data needs to be accessed in-between or cross-domian.
 
-Atomic 主要負責 DP 之間的資料管線搭建及其邏輯處理。Atomic 透過 Subscriber 訂閱上游的 DP 事件，經過邏輯處理後，再透過 DB module 將符合 schema 的處理結果寫入目標資料庫；或是透過 Publisher 同步到下游的 DP。
+### *2.2* Data Product {#dp}
+Gravity's cutting edge technology lies within the concept of **Data Products**
 
-Atomic 在啟動的時候，會從 Git Server 將所有流程及模組<sup>*</sup>下載 (clone) 到容器上運行，也可以在任何時候將當時的設定推送 (push) 回 Git Server。
+Data Product is a set of data with pre-defined schema configured by users via Gravity Dispatcher. Data Products can be consumed by multiple different consumers, thus the name “Product”.
 
-![image](/img/dp3.png)
+In this case, DB, API, Services, Atomic act as **consumers** that *consume* data as *products* 
+
+![image](/img/core/dp-image.jpg)
+
+Data Products are special because it not only can service to multiple different locations, whether it's an API or DB or *Atomic* (See [Atomic](#atom)), but also *Re-Service* to the same or different locations, as depicted above.
+
+It exists as an independent data stream, capable of streaming **real-time** data without having to interact with or compromising data sources.
+
+
+

@@ -1,7 +1,8 @@
 # Gravity Portal
 ### What is Gravity Portal?
 
-Gravity Portal is a software platform 
+Gravity Portal is a software platform designed to replace [Gravity CLI](/docs/cli.md). 
+Taking user experience into account, gravity portal allows users to create data pipelines and data products from scratch, all through easy-to-use graphical interface.
 
 ### What is Gravity and how does it work?
 
@@ -13,13 +14,13 @@ A **data product** is a packaged data asset designed to deliver value by leverag
 
 ### How to create a Data Product?
 
-1. **Go to the Data Product section** and click **Add New**.  
-2. Enter the **Name** and **Description**.  
-3. Select the **Gravity Cluster** for the data product.  
-4. In the **Database** dropdown, choose the database and table to import data from.  
-5. Click **Scan Table** to detect and display available columns.  
-6. Select the columns to include. Assign a **Partition Key** for each column to serve as a primary key and for data partitioning.  
-7. Click **Done** to finalize.  
+1. **Go to the Data Product section** and click **Add New**.
+2. Enter the **Name** and **Description**.
+3. Select the **Gravity Cluster** for the data product.
+4. In the **Database** dropdown, choose the database and table to import data from.
+5. Click **Scan Table** to detect and display available columns.
+6. Select the columns to include. Assign a **Partition Key** for each column to serve as a primary key and for data partitioning.
+7. Click **Done** to finalize.
 
 The data product will be created automatically.
 
@@ -37,19 +38,28 @@ Save to activate the subscription.
 
 ### How do I instantiate a Data Pipeline?
 
-1. **Go to the Data Flow section** and click **Add New**.  
-2. Enter the **Data Pipeline Name** and **Description**.  
-3. Select the **Gravity Cluster** for deployment.  
-4. Choose an existing **subscription** to customize.  
+1. **Go to the Data Flow section** and click **Add New**.
+2. Enter the **Data Pipeline Name** and **Description**.
+3. Select the **Gravity Cluster** for deployment.
+4. Choose an existing **subscription** to customize.
 5. Click **Done** to finalize.
 
 ### What is Atomic and what does it do?
 
 **Atomic** is a JavaScript based ETL tool tailored to **Gravity** that provides an easy-to-use interface allowing users to drag and pull different modules around to satisfy their business needs.
 
-### How do I connect to my database?
+### How do I access my Atomic pipeline?
 
-### What is Namespace?
+1. **Go to the data pipeline** section
+2. Select which atomic you'd like to edit
+3. Click onto the little blue button or select details to access the selected atomic pipeline. 
+
+### How do I connect to my database?
+1. Go to **Database** section, select "Add new" to create a new database connection.
+2. Enter database connection information, including account, passsword, etc.
+3. Click "Test Connection" upon completion.
+4. Click done if connection test came out successful.
+
 
 
 

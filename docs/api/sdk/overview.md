@@ -1,9 +1,9 @@
 # Overview 
-## types/product_event
+## *1.* types/product_event
 
-### product_event.proto
+### *1.1* product_event.proto
 
-主要 Gravity 對應的核心事件，為 Protobuf 格式。
+Gravity's event relationship settings, under Protobuf format
 
 ```
 enum Method {
@@ -22,23 +22,25 @@ message ProductEvent {
   bytes data = 6;
 }
 ```
+| Item        | Description                                                   |
+| ----------- | ------------------------------------------------------        |
+| eventName   | Defined event name                                            |
+| table       | Selected Table                                                |
+| Method      | Trigger condition, e.g., `INSERT` `UPDATE` `DELETE` `TRUNCATE`|
+| primaryKeys | Primary Keys (repeated string)                                | 
+| primaryKey  | Primary Key (bytes)                                           |
+| data        | data in bytes (compton.Record)                                |
 
-|             |                                           |
-| ----------- | ----------------------------------------- |
-| eventName   | 事件名稱                                  |
-| table       | 對應資料表                                |
-| Method      | 對應 `INSERT` `UPDATE` `DELETE` `TRUNCATE`|
-| primaryKeys | 對應 Primary Keys (repeated string)       |
-| primaryKey  | 對應 Primary Key (bytes)                  |
-| data        | 資料 (bytes)，實際上是 compton.Record     |
+### *1.2* product_event.go
 
-### product_event.go
+Provides `Marshal`\ `Unmarshal` method in relation to Product Event. Other than native Protobuf support, accessing its content require `ProductEvent.Data`. 
+See [compton records](https://github.com/BrobridgeOrg/compton/blob/main/types/record/record.proto) for more information.
 
-提供 Product Event 相對應的 `Marshal` `Unmarshal` 方法，除了原生的 protobuf 轉換，**要實際讀取內容需要**`ProductEvent.Data`** 參考 **[**compton records**](https://github.com/BrobridgeOrg/compton/blob/main/types/record/record.proto)** 的定義**。
-
-#### `compton/types/record/record.proto`
-
-為 Key-Value 的格式，`google.protobuf.Struct` 為 JSON Object。
+> :memo: **Note:**
+>
+> `compton/types/record/record.proto` is in Key-Value format
+>
+> `google.protobuf.Struct` is a JSON Object
 
 ```
 message Record {
@@ -76,9 +78,9 @@ enum DataType {
 }
 ```
 
-## product
+## *2.* product
 
-### product.go
+### *2.1* product.go
 
 可以針對 `Product` 做相關的的 CRUD，還有 `ProductClient` 的註冊。
 
