@@ -1,6 +1,6 @@
 # Quick Start
 
-## *1.* Prerequisits 
+## *1.* Prerequisites 
 
 
 * A clean Kubernetes environment with correct user privilige settings
