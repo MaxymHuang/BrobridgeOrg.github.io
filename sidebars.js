@@ -29,6 +29,17 @@ const sidebars = {
         'install_guide/atomic_guide',
       ],
     },
+    {
+      type: 'category',
+      label: 'Configurations',
+      items: [
+          'config/adapter-config',
+          'config/dispatcher-config',
+          'config/atomic-config',
+          'config/ldap',
+      ],
+    },
+    'cli',
     ],
     apiSidebar: [
         'api/general',
@@ -48,6 +59,11 @@ const sidebars = {
         'faq/gravity-portal',
         'faq/troubleshooting',
     ]
+
+
+
+
+
   // You can create another sidebar manually if needed
     //
   /*

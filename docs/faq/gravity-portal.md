@@ -6,7 +6,7 @@ Taking user experience into account, gravity portal allows users to create data 
 
 ### What is Gravity and how does it work?
 
-**Gravity **is a platform as a service (PaaS) software that induces efficient data orchestration between data sources and services. It leverages NATs Jetstream and data-mesh infrastructure to lay out dedicated pipelines that replaces traditional ETL (Extract, Transform, Load) while sustaining high availability and lightning fast data processing speeds.
+**Gravity** is a platform as a service (PaaS) software that induces efficient data orchestration between data sources and services. It leverages NATs Jetstream and data-mesh infrastructure to lay out dedicated pipelines that replaces traditional ETL (Extract, Transform, Load) while sustaining high availability and lightning fast data processing speeds.
 
 ### What is a Data Product?
 

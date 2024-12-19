@@ -1,0 +1,18 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.docSidebar.category.Installation Guide": {
+    "message": "Installation Guide",
+    "description": "The label for category Installation Guide in sidebar docSidebar"
+  },
+  "sidebar.docSidebar.category.Configurations": {
+    "message": "Configurations",
+    "description": "The label for category Configurations in sidebar docSidebar"
+  },
+  "sidebar.apiSidebar.category.Gravity-SDK": {
+    "message": "Gravity-SDK",
+    "description": "The label for category Gravity-SDK in sidebar apiSidebar"
+  }
+}

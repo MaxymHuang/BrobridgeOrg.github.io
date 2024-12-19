@@ -15,7 +15,7 @@ kubectl -n {gravity namespace} exec -it {dispatcher} -- sh
 
 Enter your CLI environment, then enter the following command
 ```
-/gravity-cli product create {dp name} --enabled --schema={schema file location} -s {nats-location:port}
+/gravity-cli product create {dp_name} --enabled --schema={schema file location} -s {nats-location:port}
 ```
 This will create a data product instance according to the schema. 
 
@@ -33,11 +33,11 @@ For data product to start streaming messages, *ruleset* **must** be configured:
 Enter the following command for **each** *action*:
 
 ```
-/gravity-cli product ruleset add {dp name} {dp name}{action} --event={dp name}{action} --enabled --method=create --handler={handler.js location} --schema={schema location} -s {nats-location:port}
+/gravity-cli product ruleset add {dp_name} {dp_name}{action} --event={dp_name}{action} --enabled --method=create --handler={handler.js location} --schema={schema location} -s {nats-location:port}
 ```
 > :warning: **Caution:** 
-> * *dp name* **must** be consistent through out the process.
-> * *event name* i.e., *dp name + action* **must** match the event name settings in the adapter .yaml file through out the process. See [Adapter Configurations](/docs/config/adapter-config.md) for more information.
+> * *dp_name* **must** be consistent through out the process.
+> * *event name* i.e., *dp_name + action* **must** match the event name settings in the adapter .yaml file through out the process. See [Adapter Configurations](/docs/config/adapter-config.md) for more information.
 
 ## *2.* Manage Data Products
 
@@ -55,14 +55,14 @@ You will get an output similar to this
 ```
 NAME 	DESCRIPTION	STATUS 	RULES	EVENTS	SIZE   	UPDATED                               	CREATED
 ----------------------------------------------------------------------------------------------------------------------------------------
-{dp name}	       	enabled	4    	10000 	3.206MB	2024-11-15 16:56:14.50993013 +0800 CST	2024-11-15 16:53:59.248494536 +0800 CST
+{dp_name}	       	enabled	4    	10000 	3.206MB	2024-11-15 16:56:14.50993013 +0800 CST	2024-11-15 16:53:59.248494536 +0800 CST
 ```
 
 #### *2.1.2* Get Data Product Info
 
 Use `info` command to see detailed information of a Data Product
 ```
-/gravity-cli product info {dp name} -s {nats-location:port}
+/gravity-cli product info {dp_name} -s {nats-location:port}
 ```
 
 ### *2.2* Enable/Disable
@@ -71,7 +71,7 @@ Gravity allows for changing the state of data product to halt and start message 
 
 To change the state of a data product, use the `update` command
 ```
-/gravity-cli product update {dp name} --enabled={state} -s {nats-location:port}
+/gravity-cli product update {dp_name} --enabled={state} -s {nats-location:port}
 ```
 Set `--enabled=true` to enable the data product, vice versa for disabling data products.
 
@@ -79,7 +79,7 @@ Set `--enabled=true` to enable the data product, vice versa for disabling data p
 
 You may purge all the message in a data product without deleting it by using the `purge` command 
 ```
-/gravity-cli product purge {dp name} -s {nats-location:port}
+/gravity-cli product purge {dp_name} -s {nats-location:port}
 ```
 This will delete the messages **only** in the message queue, the rest of the data location will not be affected.
 
@@ -87,7 +87,7 @@ This will delete the messages **only** in the message queue, the rest of the dat
 
 You may delete data products completely by using the `delete` command
 ```
-/gravity-cli product delete {dp name} -s {nats-location:port}
+/gravity-cli product delete {dp_name} -s {nats-location:port}
 ```
 
 ## *3.* Tokens
@@ -180,7 +180,7 @@ Now that a token is created, you may implement the token by using the global `-t
 
 **Example:**
 ```
-/gravity-cli product update {dp name} {actions} -s {nats-location:port} -t {token-ID}
+/gravity-cli product update {dp_name} {actions} -s {nats-location:port} -t {token-ID}
 ```
 
 
@@ -192,16 +192,43 @@ Gravity allows outside services to subscribe to a bundle of data products.
 Preview this feature by using the `sub` command.
 
 ```
-/gravity-cli product sub {dp name} -s {nats-location:port}
+/gravity-cli product sub {dp_name} -s {nats-location:port}
 ```
 This will output the messages subscribed from a specified data product
+
+#### *4.1.1* Sequence
+
+To specify subscribe start sequence, use the `--seq` tag
+```
+/gravity-cli product sub {dp_name} -s {nats-location:port} --seq {index}
+```
+Alternatively, use token to specify as token is capable of memorization
+
+```
+/gravity-cli product sub {dp_name} -s {nats-location:port} -t {token-ID}
+```
+
+#### *4.1.2* Existing Subscribers
+
+If a subscriber already exists you can specify the name of the subscriber by using the `--name` tag
+```
+/gravity-cli product sub {dp_name} -s {nats-location:port} -t {token-ID} --name {sub name}
+```
+
+#### *4.1.3* Partitions
+
+If partition is desired, simply add `--partitions` flag followed by number of partition 
+```
+/gravity-cli product sub {dp_name} -s {nats-location:port} -t {token-ID} --partitions {# of partition}
+```
+
 
 ### *4.2* Snapshots
 
 Gravity allows for taking snapshots of data products. A Snapshot creates an identical stream of message from a specified data product and stores them into a storage location.
 
 ```
-/gravity-cli product snapshot {dp name} -s {nats-location:port}
+/gravity-cli product snapshot {dp_name} -s {nats-location:port}
 ```
 
 ### *4.3* Benchmark
